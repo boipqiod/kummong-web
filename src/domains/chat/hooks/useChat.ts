@@ -36,6 +36,7 @@ export function useChat() {
     const [isLoading, setIsLoading] = useState(false);
     const [isReadyForResult, setIsReadyForResult] = useState(false);
     const historyRef = useRef<ChatMessage[]>([]);
+    const snippetsRef = useRef<string[]>([]);
 
     const sendMessage = useCallback(async (content: string) => {
         if (!content.trim() || isLoading) return;
@@ -67,6 +68,12 @@ export function useChat() {
                 throw new Error(data.error);
             }
 
+            // 스니펫 누적
+            if (data.snippets && data.snippets.length > 0) {
+                snippetsRef.current = [...snippetsRef.current, ...data.snippets];
+                console.log(`[useChat] Accumulated ${snippetsRef.current.length} snippets total.`);
+            }
+
             // Update history
             historyRef.current = [
                 ...historyRef.current,
@@ -76,30 +83,22 @@ export function useChat() {
 
             // Check if ready for interpretation
             const isReady = data.message.includes("[해몽준비완료]");
-            const cleanMessage = data.message.replace("[해몽준비완료]", "").trim();
 
-            const assistantMessage: Message = {
+            // Remove [해몽준비완료] tag from display, keep AI's original message as-is
+            const displayMessage = data.message.replace("[해몽준비완료]", "").trim();
+
+            const modelMsg: Message = {
                 id: (Date.now() + 1).toString(),
                 role: "assistant",
-                content: cleanMessage,
-                type: "text",
+                content: displayMessage,
+                type: isReady ? "action" : "text",
+                actionLabel: isReady ? "무료로 결과 확인하기" : undefined,
             };
 
-            setMessages((prev) => [...prev, assistantMessage]);
+            setMessages((prev) => [...prev, modelMsg]);
 
             if (isReady) {
                 setIsReadyForResult(true);
-                // Add action message
-                setTimeout(() => {
-                    const actionMessage: Message = {
-                        id: (Date.now() + 2).toString(),
-                        role: "assistant",
-                        content: "해몽 결과를 확인할 준비가 되었습니다.",
-                        type: "action",
-                        actionLabel: "무료로 결과 확인하기",
-                    };
-                    setMessages((prev) => [...prev, actionMessage]);
-                }, 800);
             }
         } catch (error) {
             console.error("Chat error:", error);
@@ -119,11 +118,22 @@ export function useChat() {
         return historyRef.current;
     }, []);
 
+    /**
+     * 누적된 스니펫을 evidence 문자열로 반환
+     */
+    const getEvidence = useCallback((): string => {
+        if (snippetsRef.current.length === 0) return '';
+        // 중복 제거 후 반환
+        const unique = [...new Set(snippetsRef.current)];
+        return unique.join('\n');
+    }, []);
+
     return {
         messages,
         isLoading,
         isReadyForResult,
         sendMessage,
         getConversationHistory,
+        getEvidence,
     };
 }

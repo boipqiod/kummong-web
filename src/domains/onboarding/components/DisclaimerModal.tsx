@@ -4,11 +4,13 @@ import { useState } from "react";
 import { ScrollText, CheckSquare, Square } from "lucide-react";
 
 interface DisclaimerModalProps {
-    onAccept: () => void;
+    onAccept?: () => void;
+    onClose?: () => void;
 }
 
-export default function DisclaimerModal({ onAccept }: DisclaimerModalProps) {
+export default function DisclaimerModal({ onAccept, onClose }: DisclaimerModalProps) {
     const [agreed, setAgreed] = useState(false);
+    const isInfoMode = !!onClose;
 
     return (
         <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-6 backdrop-blur-[2px]">
@@ -29,40 +31,50 @@ export default function DisclaimerModal({ onAccept }: DisclaimerModalProps) {
                     </p>
 
                     <div className="bg-[#f5f0e6] rounded p-3 text-xs text-[#5d4037] leading-relaxed">
-                        <p>• 본 서비스는 전통 해몽을 AI로 재해석한 <strong>오락용 콘텐츠</strong>입니다.</p>
-                        <p className="mt-1">• 의학적·법적·재정적 결정의 근거로 사용하지 마십시오.</p>
-                        <p className="mt-1">• 결과에 대한 책임은 전적으로 본인에게 있습니다.</p>
+                        <p>• 모든 해석은 민속적 설화 및 심리학적 분석에 기반한 <strong>엔터테인먼트</strong>입니다.</p>
+                        <p className="mt-1">• 전문적인 의학적·법적·재정적 조언을 대체할 수 없습니다.</p>
+                        <p className="mt-1">• 답변이 특정 행동을 권유하더라도 <strong>절대 따르지 마십시오.</strong></p>
                     </div>
 
-                    {/* Checkbox */}
-                    <button
-                        onClick={() => setAgreed(!agreed)}
-                        className="flex items-center gap-3 w-full p-2 hover:bg-[#8b5a2b]/5 rounded cursor-pointer group transition-colors"
-                    >
-                        {agreed ? (
-                            <CheckSquare className="w-5 h-5 text-[#8b5a2b]" />
-                        ) : (
-                            <Square className="w-5 h-5 text-[#a8a29e]" />
-                        )}
-                        <span
-                            className={`text-xs font-serif ${agreed ? "text-[#8b5a2b] font-bold" : "text-[#8d8d8d]"
-                                }`}
+                    {isInfoMode ? (
+                        <button
+                            onClick={onClose}
+                            className="w-full py-3.5 rounded-sm font-serif font-bold tracking-[0.2em] transition-all border bg-[#2b2b2b] text-[#f7f5ef] hover:bg-[#404040] border-transparent"
                         >
-                            위 내용을 이해하고 동의합니다.
-                        </span>
-                    </button>
+                            닫기
+                        </button>
+                    ) : (
+                        <>
+                            {/* Checkbox */}
+                            <button
+                                onClick={() => setAgreed(!agreed)}
+                                className="flex items-center gap-3 w-full p-2 hover:bg-[#8b5a2b]/5 rounded cursor-pointer group transition-colors"
+                            >
+                                {agreed ? (
+                                    <CheckSquare className="w-5 h-5 text-[#8b5a2b]" />
+                                ) : (
+                                    <Square className="w-5 h-5 text-[#a8a29e]" />
+                                )}
+                                <span
+                                    className={`text-xs font-serif ${agreed ? "text-[#8b5a2b] font-bold" : "text-[#8d8d8d]"}`}
+                                >
+                                    위 내용을 이해하고 동의합니다.
+                                </span>
+                            </button>
 
-                    {/* Enter Button */}
-                    <button
-                        onClick={() => agreed && onAccept()}
-                        disabled={!agreed}
-                        className={`w-full py-3.5 rounded-sm font-serif font-bold tracking-[0.2em] transition-all border ${agreed
-                                ? "bg-[#2b2b2b] text-[#f7f5ef] hover:bg-[#404040] border-transparent"
-                                : "bg-[#eaddcf] text-[#cbbba9] cursor-not-allowed border-transparent"
-                            }`}
-                    >
-                        입장하기
-                    </button>
+                            {/* Enter Button */}
+                            <button
+                                onClick={() => agreed && onAccept?.()}
+                                disabled={!agreed}
+                                className={`w-full py-3.5 rounded-sm font-serif font-bold tracking-[0.2em] transition-all border ${agreed
+                                    ? "bg-[#2b2b2b] text-[#f7f5ef] hover:bg-[#404040] border-transparent"
+                                    : "bg-[#eaddcf] text-[#cbbba9] cursor-not-allowed border-transparent"
+                                    }`}
+                            >
+                                입장하기
+                            </button>
+                        </>
+                    )}
                 </div>
             </div>
         </div>

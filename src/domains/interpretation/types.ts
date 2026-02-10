@@ -8,8 +8,16 @@ export interface InterpretationResult {
         name: string;
         korean: string;
         description: string;
+        category?: TalismanCategory;
+        sentiment?: number; // 0~10
+    };
+    quote?: {
+        source: string;
+        text: string;
     };
     socialSummary: string;
 }
+
+export type TalismanCategory = "wealth" | "health" | "relationship" | "career" | "protection";
 
 export type ResultTabType = "ANALYSIS" | "TALISMAN" | "SOCIAL";

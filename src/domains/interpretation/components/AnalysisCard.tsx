@@ -1,6 +1,6 @@
 "use client";
 
-import { Sparkles, Feather } from "lucide-react";
+import { Sparkles, Feather, BookOpen } from "lucide-react";
 import { InterpretationResult } from "../types";
 
 interface AnalysisCardProps {
@@ -28,10 +28,10 @@ export default function AnalysisCard({ result }: AnalysisCardProps) {
                         </span>
                         <span
                             className={`text-xs px-2 py-0.5 rounded font-bold ${result.gilHyung === "길몽"
-                                    ? "bg-green-100 text-green-700"
-                                    : result.gilHyung === "흉몽"
-                                        ? "bg-red-100 text-red-700"
-                                        : "bg-gray-100 text-gray-700"
+                                ? "bg-green-100 text-green-700"
+                                : result.gilHyung === "흉몽"
+                                    ? "bg-red-100 text-red-700"
+                                    : "bg-gray-100 text-gray-700"
                                 }`}
                         >
                             {result.gilHyung}
@@ -69,6 +69,21 @@ export default function AnalysisCard({ result }: AnalysisCardProps) {
                             {result.advice}
                         </p>
                     </div>
+
+                    {/* Quote (지관의 비기) */}
+                    {result.quote && (
+                        <div className="bg-[#f9f5ec] border-l-2 border-[#8b5a2b] p-3 rounded-r-sm">
+                            <h4 className="text-xs font-bold text-[#8b5a2b] mb-1 flex items-center gap-1">
+                                <BookOpen className="w-3 h-3" /> 지관의 비기
+                            </h4>
+                            <p className="text-xs text-[#5d4037] italic font-serif leading-relaxed">
+                                &ldquo;{result.quote.text}&rdquo;
+                            </p>
+                            <p className="text-[9px] text-[#8d8d8d] mt-1 text-right">
+                                ― {result.quote.source}
+                            </p>
+                        </div>
+                    )}
                 </div>
 
                 {/* Stamp */}
